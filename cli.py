@@ -1,12 +1,12 @@
 import socket
 import sys
-import time
 
 host = "localhost"
-port = 3001
+port = int(sys.argv[2])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
 mystring = str(sys.argv[1])
 s.sendall(mystring.encode("utf-8"))
-print(str(s.recv(1024)))
+while True:
+  print(str(s.recv(1024)))

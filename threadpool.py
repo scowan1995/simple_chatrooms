@@ -7,6 +7,7 @@ released under MIT licence although mine does more stuff.
 """
 from queue import Queue
 from threading import Thread
+from threading import enumerate
 
 
 class Worker(Thread):
@@ -16,7 +17,6 @@ class Worker(Thread):
         self.tasks = tasks
         self.stop_flag = False
         self.start()
-
 
     def run(self):
         """ this gets run when a thread starts"""
@@ -38,7 +38,8 @@ class Worker(Thread):
 class ThreadPool:
     """Pool of threads consuming tasks from a queue"""
     def __init__(self, num_threads):
-        self.isStopped = False
+        self.num_threads = num_threads
+        self._isStopped = False
         self.tasks = Queue(num_threads)
         for i in range(num_threads):
             Worker(self.tasks)
@@ -47,7 +48,7 @@ class ThreadPool:
         """Add a task to the queue"""
         self.tasks.put((func, kargs))
 
-    def num_tasks():
+    def num_tasks(self):
         return self.tasks.qsize()
 
     def wait_completion(self):
@@ -58,15 +59,15 @@ class ThreadPool:
         """
         stops the threads from working but you can restart if you wish
         """
-        for i in threading.enumerate():
+        for i in enumerate():
             i.stop_flag = True
-        isStopped = True
+        self._isStopped = True
 
     def restart(self):
-        if isStopped:
-            for i in range(num_threads):
+        if self._isStopped:
+            for i in range(self.num_threads):
                 Worker(self.tasks)
-            self.isStopped = False
+            self._isStopped = False
         else:
             raise AlreadyRunningError("AlreadyRunningError: You cannot \
                 restart a threadpool that is already running")
@@ -74,8 +75,12 @@ class ThreadPool:
     def purge_tasks(self):
         """ deletes all tasks in the task queue """
         for i in self.tasks:
-            x = self.tasks.get()
+            self.tasks.get()
             self.tasks.task_done()
+
+    def isStopped(self):
+        return self._isStopped
+
 
 class AlreadyRunningError(Exception):
     """
