@@ -99,7 +99,7 @@ class server:
             room.subscribe(client_name, client_ip)
         else:
             # create and join room
-            room = self.chatrooms[room_name]
+            room = self.chatrooms[room_name]    
             room.subscribe(client_name, client_ip)
         room.subscribe(client_name, client_ip, client_port)
         l = room.get_publish_list()
